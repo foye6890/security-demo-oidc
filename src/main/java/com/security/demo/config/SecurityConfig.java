@@ -1,5 +1,6 @@
 package com.security.demo.config;
 
+import com.security.demo.security.oidc.AppOidcUserService;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +14,14 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 @Configuration
 public class SecurityConfig {
 
+    private final AppOidcUserService appOidcUserService;
+
     @Value("${app.security.oauth2.login-uri:/login}")
     private String loginUri;
+
+    public SecurityConfig(AppOidcUserService appOidcUserService) {
+        this.appOidcUserService = appOidcUserService;
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(
@@ -30,6 +37,7 @@ public class SecurityConfig {
 
         if (oidcEnabled) {
             http.oauth2Login(oauth2 -> oauth2
+                    .userInfoEndpoint(userInfo -> userInfo.oidcUserService(appOidcUserService))
                     .defaultSuccessUrl("/menu", true)
             );
             http.exceptionHandling(exceptionHandling -> exceptionHandling

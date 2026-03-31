@@ -26,3 +26,4 @@ app:
   security:
     oauth2:
       login-uri: /oauth2/authorization/oidc
+      user-id-claim: preferred_username
